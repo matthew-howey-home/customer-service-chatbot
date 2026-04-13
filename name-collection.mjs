@@ -26,10 +26,10 @@ Rules:
 - do not include any text outside the JSON
 
 Completion rule:
-- Only when BOTH customer_data.firstName AND customer_data.lastName are NOT null,
+- When BOTH customer_data.firstName AND customer_data.lastName are NOT null,
   you must say exactly:
   "Thank you. I have all the information I need."
-
+- You must NOT say "Thank you. I have all the information I need." if either customer_data.firstName OR customer_data.lastName are null
 - If either field is null, you must ask the user for the missing field
 `
 
