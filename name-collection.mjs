@@ -33,14 +33,6 @@ Completion rule:
 - If either field is null, you must ask the user for the missing field
 `
 
-const getUserContext = (currentState, latestCustomerResponse, conversationHistory) => `
-CUSTOMER_RESPONSE:
-${latestCustomerResponse}
-
-CONVERSATION_HISTORY:
-${JSON.stringify(conversationHistory, null, 2)}
-`;
-
 // System prompt describing the orchestration rules
 const getLLMCallContent = (conversationHistory) => ({
   model: "gpt-3.5-turbo",
@@ -54,12 +46,6 @@ const getLLMCallContent = (conversationHistory) => ({
 });
 
 let conversationHistory = [];
-let currentState = {
-  customer_data: {
-    firstName: null,
-    lastName: null,
-  },
-};
 
 async function sendUserInput(userInput) {
   if (userInput) {
@@ -106,12 +92,6 @@ async function runFlow() {
     const userInput = await askQuestion("\n[Enter user response]: ");
     llmOutput = await sendUserInput(userInput);
     console.log("\n[Full LLM Output]\n", JSON.stringify(llmOutput, 0, 2));
-    // if (llmOutput.customer_data.firstName && !currentState.customer_data.firstName) {
-    //   currentState.customer_data.firstName = llmOutput.customer_data.firstName;
-    // }
-    // if (llmOutput.customer_data.lastName && !currentState.customer_data.lastName) {
-    //   currentState.customer_data.lastName = llmOutput.customer_data.lastName;
-    // }
   }
   rl.close();
 }
