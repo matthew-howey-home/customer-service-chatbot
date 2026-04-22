@@ -6,10 +6,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function main() {
-  const messages = [{
-    role: "system",
-    content: `
+const SYSTEM_PROMPT = `
 You are a chatbot that collects a user's first and last name.
 
 Always respond in this JSON format:
@@ -26,7 +23,34 @@ Rules:
 - Be polite and conversational in "speak_to_customer"
 - If the user provides both names, acknowledge them
 - Do not include anything outside the JSON
-`
+`;
+
+const responseFormat = {
+  type: "json_schema",
+  json_schema: {
+    name: "customer_interaction",
+    schema: {
+      type: "object",
+      properties: {
+        speak_to_customer: { type: "string" },
+        customer_data: {
+          type: "object",
+          properties: {
+            firstName: { type: ["string", "null"] },
+            lastName: { type: ["string", "null"] }
+          },
+          required: ["firstName", "lastName"]
+        }
+      },
+      required: ["speak_to_customer", "customer_data"]
+    }
+  }
+}
+
+async function main() {
+  const messages = [{
+    role: "system",
+    content: SYSTEM_PROMPT
   },
   {
     role: "user",
@@ -36,27 +60,7 @@ Rules:
   const response = await openai.chat.completions.create({
     model: "gpt-5.4",
     messages,
-    response_format: {
-      type: "json_schema",
-      json_schema: {
-        name: "customer_interaction",
-        schema: {
-          type: "object",
-          properties: {
-            speak_to_customer: { type: "string" },
-            customer_data: {
-              type: "object",
-              properties: {
-                firstName: { type: ["string", "null"] },
-                lastName: { type: ["string", "null"] }
-              },
-              required: ["firstName", "lastName"]
-            }
-          },
-          required: ["speak_to_customer", "customer_data"]
-        }
-      }
-    }
+    response_format: responseFormat,
   });
 
   console.log(JSON.stringify(response, null, 2));
