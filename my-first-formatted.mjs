@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import dotenv from "dotenv";
 dotenv.config();
 
-const openai = new OpenAI({
+const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
@@ -47,23 +47,71 @@ const responseFormat = {
   }
 }
 
-async function main() {
-  const messages = [{
-    role: "system",
-    content: SYSTEM_PROMPT
-  },
-  {
-    role: "user",
-    content: "Hi"
-  }];
+let conversationHistory = [{
+  role: "user",
+  content: "Hi"
+}];
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-5.4",
-    messages,
-    response_format: responseFormat,
-  });
+// System prompt describing the orchestration rules
+const getLLMCallContent = (conversationHistory) => ({
+  model: "gpt-5.4",
+  messages: [
+    {
+      role: "system",
+      content: SYSTEM_PROMPT,
+    },
+    ...conversationHistory,
+  ],
+  response_format: responseFormat,
+});
 
-  console.log(JSON.stringify(response, null, 2));
+async function sendUserInput(userInput) {
+  if (userInput) {
+    conversationHistory.push({
+      role: 'user',
+      content: userInput,
+    });
+  }
+
+  const llmCallContent = getLLMCallContent(conversationHistory);
+  console.log('[Sending the following to LLM:]', JSON.stringify(llmCallContent, 0, 2));
+
+  const completion = await client.chat.completions.create(llmCallContent);
+
+  const llmOutput = completion.choices[0].message.content;
+
+  const parsedOutput = JSON.parse(llmOutput);
+  conversationHistory.push({ role: "assistant", content: parsedOutput.speak_to_customer });
+
+  return parsedOutput;
 }
 
-main();
+// Example CLI interaction
+import readline from "readline";
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+function askQuestion(query) {
+  return new Promise((resolve) => {
+    rl.question(query, resolve);
+  });
+}
+
+async function runFlow() {
+  console.log("=== Customer Service CLI Simulation ===");
+
+  let llmOutput = await sendUserInput('');
+  console.log("\n[Full LLM Output]\n", JSON.stringify(llmOutput, 0, 2));
+
+  while (!llmOutput.customer_data.firstName || !llmOutput.customer_data.lastName) {
+    const userInput = await askQuestion("\n[Enter user response]: ");
+    llmOutput = await sendUserInput(userInput);
+    console.log("\n[Full LLM Output]\n", JSON.stringify(llmOutput, 0, 2));
+  }
+  rl.close();
+}
+
+runFlow();
