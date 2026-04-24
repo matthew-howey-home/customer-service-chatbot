@@ -19,6 +19,8 @@ nunjucks.configure("views", {
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "njk");
 
+app.use(express.json());
+
 app.use('/', (req, res, next) => {
   console.log(`Call received on my first chatbot: ${req.method} ${req.url}`);
   next();
@@ -174,5 +176,16 @@ app.get("/home", async (req, res) => {
     speakToCustomer: llmOutput.speak_to_customer,
   });
 });
+
+app.post("/message", async (req, res) => {
+  console.log('Message received from user', req.body);
+  const userInput = req.body.message;
+
+  const llmOutput = await sendUserInput(userInput);
+
+  console.log("\n[Full LLM Output]\n", JSON.stringify(llmOutput, 0, 2));
+
+  res.json(llmOutput);
+})
 
 // runFlow();

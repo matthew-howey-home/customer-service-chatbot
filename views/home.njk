@@ -1,6 +1,46 @@
 <html>
-    <body>
-        <h1>My First Chatbot</h1>
+  <body>
+    <h1>My First Chatbot</h1>
+
+    <div id="chat">
+      <div class="message bot">
         {{ speakToCustomer }}
-    </body>
+      </div>
+    </div>
+
+    <input id="userInput" type="text" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+
+    <script>
+      async function sendMessage() {
+        const input = document.getElementById("userInput");
+        const message = input.value;
+
+        if (!message) return;
+
+        // add user message to UI immediately
+        const chat = document.getElementById("chat");
+        chat.innerHTML += `<div class="message user">${message}</div>`;
+
+        input.value = "";
+
+        // send to server
+        const res = await fetch("/message", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await res.json();
+
+        console.log('Response back from server:');
+        console.log(data);
+
+        // add bot response
+        chat.innerHTML += `<div class="message bot">${data.speak_to_customer}</div>`;
+      }
+    </script>
+  </body>
 </html>
