@@ -1,6 +1,18 @@
 import OpenAI from "openai";
 import dotenv from "dotenv";
+import express from 'express';
 dotenv.config();
+
+const app = express();
+
+app.use('/', (req, res, next) => {
+  console.log(`Call received on my first chatbot: ${req.method} ${req.url}`);
+  res.send('Call received!');
+});
+
+app.listen(3000, () => {
+  console.log('Listening on port 3000');
+});
 
 const client = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -138,4 +150,4 @@ async function runFlow() {
   rl.close();
 }
 
-runFlow();
+// runFlow();
