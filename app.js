@@ -1,13 +1,31 @@
 import OpenAI from "openai";
 import dotenv from "dotenv";
 import express from 'express';
+import nunjucks from 'nunjucks';
+import path from "path";
+import { fileURLToPath } from "url";
+// ESM __dirname fix
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 dotenv.config();
 
 const app = express();
+nunjucks.configure("views", {
+  autoescape: true,
+  express: app
+});
+
+app.set("views", path.join(__dirname, "views"));
+app.set("view engine", "njk");
 
 app.use('/', (req, res, next) => {
   console.log(`Call received on my first chatbot: ${req.method} ${req.url}`);
-  res.send('Call received!');
+  next();
+});
+
+app.get("/home", (req, res) => {
+  res.render("home.njk");
 });
 
 app.listen(3000, () => {
