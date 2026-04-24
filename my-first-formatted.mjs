@@ -13,8 +13,14 @@ Always respond in this JSON format:
 {
   "speak_to_customer": string,
   "customer_data": {
-    "firstName": string | null,
-    "lastName": string | null
+    "firstName": {
+      value: string | null,
+      spelling_confirmed: boolean
+    },
+    "lastName": {
+      value: string | null,
+      spelling_confirmed: boolean
+    }
   }
 }
 
@@ -22,6 +28,7 @@ Rules:
 - Ask for missing information step by step
 - Be polite and conversational in "speak_to_customer"
 - If the user provides both names, acknowledge them
+- Ask the user to confirm the spelling of the names
 - Do not include anything outside the JSON
 `;
 
@@ -36,8 +43,20 @@ const responseFormat = {
         customer_data: {
           type: "object",
           properties: {
-            firstName: { type: ["string", "null"] },
-            lastName: { type: ["string", "null"] }
+            firstName: {
+              type: "object",
+              properties: {
+                value: { type: ["string", "null"] },
+                spelling_confirmed: { type: ["boolean"] },
+              }
+            },
+            lastName: {
+              type: "object",
+              properties: {
+                value: { type: ["string", "null"] },
+                spelling_confirmed: { type: ["boolean"] }
+              }
+            }
           },
           required: ["firstName", "lastName"]
         }
@@ -45,7 +64,7 @@ const responseFormat = {
       required: ["speak_to_customer", "customer_data"]
     }
   }
-}
+};
 
 let conversationHistory = [{
   role: "user",
@@ -106,7 +125,12 @@ async function runFlow() {
   let llmOutput = await sendUserInput('');
   console.log("\n[Full LLM Output]\n", JSON.stringify(llmOutput, 0, 2));
 
-  while (!llmOutput.customer_data.firstName || !llmOutput.customer_data.lastName) {
+  while (
+    !llmOutput.customer_data.firstName.value ||
+    !llmOutput.customer_data.lastName.value ||
+    !llmOutput.customer_data.firstName.spelling_confirmed ||
+    !llmOutput.customer_data.lastName.spelling_confirmed
+  ) {
     const userInput = await askQuestion("\n[Enter user response]: ");
     llmOutput = await sendUserInput(userInput);
     console.log("\n[Full LLM Output]\n", JSON.stringify(llmOutput, 0, 2));
