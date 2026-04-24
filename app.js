@@ -24,10 +24,6 @@ app.use('/', (req, res, next) => {
   next();
 });
 
-app.get("/home", (req, res) => {
-  res.render("home.njk");
-});
-
 app.listen(3000, () => {
   console.log('Listening on port 3000');
 });
@@ -167,5 +163,16 @@ async function runFlow() {
   }
   rl.close();
 }
+
+app.get("/home", async (req, res) => {
+  console.log("=== Customer Service Simulation ===");
+
+  let llmOutput = await sendUserInput('');
+  console.log("\n[Full LLM Output]\n", JSON.stringify(llmOutput, 0, 2));
+
+  res.render("home.njk", {
+    speakToCustomer: llmOutput.speak_to_customer,
+  });
+});
 
 // runFlow();
