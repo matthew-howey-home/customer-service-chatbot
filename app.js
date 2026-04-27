@@ -3,7 +3,9 @@ import dotenv from "dotenv";
 import express from 'express';
 import nunjucks from 'nunjucks';
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
+
 // ESM __dirname fix
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,6 +17,8 @@ nunjucks.configure("views", {
   autoescape: true,
   express: app
 });
+
+app.use(express.static("public"));
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "njk");
@@ -178,14 +182,30 @@ app.get("/home", async (req, res) => {
 });
 
 app.post("/message", async (req, res) => {
-  console.log('Message received from user', req.body);
   const userInput = req.body.message;
 
   const llmOutput = await sendUserInput(userInput);
 
-  console.log("\n[Full LLM Output]\n", JSON.stringify(llmOutput, 0, 2));
+  // 1. Generate speech from LLM response text
+  const speech = await client.audio.speech.create({
+    model: "gpt-4o-mini-tts",
+    voice: "alloy",
+    input: llmOutput.speak_to_customer,
+  });
 
-  res.json(llmOutput);
-})
+  const buffer = Buffer.from(await speech.arrayBuffer());
+
+  // 2. Save file
+  const fileName = `speech-${Date.now()}.mp3`;
+  const filePath = path.join("public", fileName);
+
+  fs.writeFileSync(filePath, buffer);
+
+  // 3. Return BOTH text + audio URL
+  res.json({
+    ...llmOutput,
+    audio_url: `/${fileName}`,
+  });
+});
 
 // runFlow();

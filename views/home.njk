@@ -40,6 +40,12 @@
 
         // add bot response
         chat.innerHTML += `<div class="message bot">${data.speak_to_customer}</div>`;
+
+        // play audio
+        if (data.audio_url) {
+          const audio = new Audio(data.audio_url);
+          audio.play();
+        }
       }
     </script>
   </body>
