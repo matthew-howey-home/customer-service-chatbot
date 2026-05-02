@@ -176,8 +176,25 @@ app.get("/home", async (req, res) => {
   let llmOutput = await sendUserInput('');
   console.log("\n[Full LLM Output]\n", JSON.stringify(llmOutput, 0, 2));
 
+  // 1. Generate speech from LLM response text
+  const speech = await client.audio.speech.create({
+    model: "gpt-4o-mini-tts",
+    voice: "alloy",
+    input: llmOutput.speak_to_customer,
+  });
+
+  const buffer = Buffer.from(await speech.arrayBuffer());
+
+  // 2. Save file
+  const fileName = `speech-${Date.now()}.mp3`;
+  const filePath = path.join("public", fileName);
+
+  fs.writeFileSync(filePath, buffer);
+
+
   res.render("home.njk", {
     speakToCustomer: llmOutput.speak_to_customer,
+    initialAudio: `/${fileName}`,
   });
 });
 
