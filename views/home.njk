@@ -1,4 +1,16 @@
 <html>
 <body>
     <h1>My first chatbot</h1>
+    <button id="startBtn">Start using chatbot!</button>
 </body>
+
+<script>
+  async function unlockAudio() {
+    const audio = new Audio("{{ initialAudio }}");
+    await audio.play();
+  }
+
+  document.getElementById("startBtn").addEventListener("click", async () => {
+    await unlockAudio();
+  });
+</script>
