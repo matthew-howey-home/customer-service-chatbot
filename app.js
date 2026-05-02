@@ -2,6 +2,7 @@ import express from 'express';
 import nunjucks from 'nunjucks';
 
 import homePageController from './controllers/home-page.js';
+import processMessageController from './controllers/process-message-controller.js';
 
 const app = express();
 nunjucks.configure('views', {
@@ -10,6 +11,7 @@ nunjucks.configure('views', {
 });
 
 app.use(express.static('public'));
+app.use(express.json());
 
 app.use('/', (req, res, next) => {
   console.log(`Call received on my first chatbot: ${req.method} ${req.url}`);
@@ -17,6 +19,7 @@ app.use('/', (req, res, next) => {
 });
 
 app.get('/home', homePageController);
+app.post('/message', processMessageController);
 
 app.listen(3000, () => {
   console.log('My first chatbot, listening on port 3000');
