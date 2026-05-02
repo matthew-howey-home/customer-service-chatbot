@@ -11,5 +11,5 @@ app.use('/', (req, res, next) => {
 app.get('/home', homePageController);
 
 app.listen(3000, () => {
-  console.log('My first chatbotm, listening on port 3000');
+  console.log('My first chatbot, listening on port 3000');
 });
