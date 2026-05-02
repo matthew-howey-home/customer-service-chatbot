@@ -103,7 +103,6 @@ let conversationHistory = [{
   content: "Hi"
 }];
 
-// System prompt describing the orchestration rules
 const getLLMCallContent = (conversationHistory) => ({
   model: "gpt-4o-mini",
   messages: [
