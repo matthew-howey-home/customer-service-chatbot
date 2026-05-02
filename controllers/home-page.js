@@ -1,7 +1,7 @@
-import sendUserInput from '../lib/send-user-input.js';
+import callLLM from '../lib/call-llm.js';
 
 const homePageController = async (req, res) => {
-  const LLMResponse = await sendUserInput('');
+  const LLMResponse = await callLLM('');
   res.send('You are on the home page');
 };
 
