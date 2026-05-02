@@ -8,9 +8,31 @@
   async function unlockAudio() {
     const audio = new Audio("{{ initialAudio }}");
     await audio.play();
+
+    // Wait until playback finishes
+    await new Promise((resolve) => {
+      audio.onended = resolve;
+    });
+  }
+
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-GB";
+  recognition.interimResults = false;
+
+  recognition.onresult = async (event) => {
+    const text = event.results[0][0].transcript;
+    console.log("Heard:", text);
+  };
+
+  function startListening() {
+    console.log('Starting to listen');
+    recognition.start();
   }
 
   document.getElementById("startBtn").addEventListener("click", async () => {
     await unlockAudio();
+    startListening();
   });
 </script>
