@@ -5,8 +5,8 @@
 </body>
 
 <script>
-  async function unlockAudio() {
-    const audio = new Audio("{{ initialAudio }}");
+  async function playAudio(audioFilePath) {
+    const audio = new Audio(audioFilePath);
     await audio.play();
 
     // Wait until playback finishes
@@ -38,7 +38,7 @@
   }
 
   document.getElementById("startBtn").addEventListener("click", async () => {
-    await unlockAudio();
+    await playAudio('{{ initialAudio }}');
     startListening();
   });
 </script>
