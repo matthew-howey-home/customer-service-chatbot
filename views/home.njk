@@ -5,6 +5,13 @@
 </body>
 
 <script>
+  // set up
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-GB";
+  recognition.interimResults = false;
+
   async function playAudio(audioFilePath) {
     const audio = new Audio(audioFilePath);
     await audio.play();
@@ -15,31 +22,28 @@
     });
   }
 
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
-  recognition.lang = "en-GB";
-  recognition.interimResults = false;
-
-  recognition.onresult = async (event) => {
-    const text = event.results[0][0].transcript;
-    console.log("Heard:", text);
-
+  async function fetchNextLLMResponse(messageFromCustomer) {
     const res = await fetch('/message', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text })
+      body: JSON.stringify({ message: messageFromCustomer })
     });
+    return res.json();
+  }
 
-    const data = await res.json();
+  recognition.onresult = async (event) => {
+    const messageFromCustomer = event.results[0][0].transcript;
+    console.log("Heard:", messageFromCustomer);
 
+    const data = await fetchNextLLMResponse(messageFromCustomer);
     console.log('Response back from server:');
     console.log(data);
 
-    // play audio
+    // play response from LLM
     if (data.audio_url) {
       await playAudio(data.audio_url);
     }
+    // get next message from customer
     startListening();
   };
 
