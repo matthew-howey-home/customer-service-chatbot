@@ -5,7 +5,7 @@ const processMessageController = async (req, res) => {
   console.log('Message received was:', req.body);
   const llmResponse = await callLLM(req.body.message);
   const fileName = await textToSpeech(llmResponse.speak_to_customer);
-  res.json({ fileName });
+  res.json({ audio_url: fileName });
 };
 
 export default processMessageController;

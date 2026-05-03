@@ -30,6 +30,17 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: text })
     });
+
+    const data = await res.json();
+
+    console.log('Response back from server:');
+    console.log(data);
+
+    // play audio
+    if (data.audio_url) {
+      await playAudio(data.audio_url);
+    }
+    startListening();
   };
 
   function startListening() {
