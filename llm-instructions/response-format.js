@@ -13,6 +13,7 @@ const responseFormat = {
               type: "object",
               properties: {
                 value: { type: ["string", "null"] },
+                correct_spelling: { type: ["string", "null"] },
                 spelling_confirmed: { type: ["boolean"] },
               }
             },
@@ -20,6 +21,7 @@ const responseFormat = {
               type: "object",
               properties: {
                 value: { type: ["string", "null"] },
+                correct_spelling: { type: ["string", "null"] },
                 spelling_confirmed: { type: ["boolean"] }
               }
             }

@@ -7,10 +7,12 @@ Always respond in this JSON format:
   "customer_data": {
     "firstName": {
       value: string | null,
+      correct_spelling: string | null,
       spelling_confirmed: boolean
     },
     "lastName": {
       value: string | null,
+      correct_spelling: string | null,
       spelling_confirmed: boolean
     }
   }
