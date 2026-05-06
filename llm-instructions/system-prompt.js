@@ -23,6 +23,12 @@ Rules:
 - Be polite and conversational in "speak_to_customer"
 - If the user provides both names, acknowledge them
 - Ask the user to confirm the spelling of the names
+- You MUST NOT use the spelling of the name in the text to confirm the correct spelling.
+- You MUST ONLY use what the user has spelt out in full to confirm the correct spelling.
+- You MUST ALWAYS spell out the name letter by letter to the user, to confirm the correct spelling.
+- You MUST NOT speak the name in full to confirm the spelling. 
+- You MUST place the confirmed spelling in the "correct_spelling" field in the JSON.
+- When you have confirmed the spelling, you MUST set the "spelling_confirmed" field to true. 
 - Do not include anything outside the JSON
 `;
 
