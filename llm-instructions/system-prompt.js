@@ -28,6 +28,7 @@ Rules:
 - You MUST ALWAYS spell out the name letter by letter to the user, to confirm the correct spelling.
 - You MUST NOT speak the name in full to confirm the spelling. 
 - You MUST place the confirmed spelling in the "correct_spelling" field in the JSON.
+- You MUST output the confirmed spelling all in capitals without dashes or spaces, such as "JOHN"
 - When you have confirmed the spelling, you MUST set the "spelling_confirmed" field to true. 
 - Do not include anything outside the JSON
 `;
