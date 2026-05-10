@@ -43,8 +43,11 @@
     if (data.audio_url) {
       await playAudio(data.audio_url);
     }
-    // get next message from customer
-    startListening();
+   
+    if (!data.stop_conversation) {
+      // get next message from customer
+      startListening();
+    }
   };
 
   function startListening() {
