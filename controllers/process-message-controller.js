@@ -3,7 +3,7 @@ import textToSpeech from '../lib/text-to-speech.js';
 
 const processMessageController = async (req, res) => {
   console.log('Message received was:', req.body);
-  const llmResponse = await callLLM(req.body.message);
+  const llmResponse = await callLLM(req.body.message, req.headers['conversation-id']);
   const { customer_data } = llmResponse;
   const { firstName, lastName } = customer_data;
   if (
