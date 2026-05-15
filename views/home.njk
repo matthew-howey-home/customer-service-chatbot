@@ -1,7 +1,19 @@
 <html>
 <body>
     <h1>My first chatbot</h1>
+
     <button id="startBtn">Start using chatbot!</button>
+
+    <!-- Chat status -->
+    <div id="conversationStatus" class="status-box">
+        Conversation Ongoing
+    </div>
+
+    <!-- User information -->
+    <div id="userInfo" class="info-box">
+        <p><strong>First Name:</strong> <span id="firstName">Not provided yet</span></p>
+        <p><strong>Last Name:</strong> <span id="lastName">Not provided yet</span></p>
+    </div>
 </body>
 
 <script>
@@ -47,6 +59,18 @@
     if (!data.stop_conversation) {
       // get next message from customer
       startListening();
+    } else {
+      // Update conversation status
+      const statusBox = document.getElementById("conversationStatus");
+
+      statusBox.textContent = "Conversation Completed";
+      statusBox.style.backgroundColor = "#f8d7da"; // mild red
+      statusBox.style.borderColor = "#f5c2c7";
+      statusBox.style.color = "#842029";
+
+      document.getElementById('firstName').textContent = data.customer_data.firstName.correct_spelling;
+      document.getElementById('lastName').textContent = data.customer_data.lastName.correct_spelling;
+      document.getElementById('userInfo').style.display = "block";
     }
   };
 
@@ -56,7 +80,42 @@
   }
 
   document.getElementById("startBtn").addEventListener("click", async () => {
+    // Show the conversation status box
+    document.getElementById("conversationStatus").style.display = "block";
+    document.getElementById("startBtn").style.display = "none";
     await playAudio('{{ initialAudio }}');
     startListening();
   });
 </script>
+
+<style>
+  body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+  }
+
+  button {
+      padding: 10px 16px;
+      margin-bottom: 20px;
+      cursor: pointer;
+  }
+
+  .status-box,
+  .info-box {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 15px;
+      margin-top: 10px;
+      width: 300px;
+      background-color: #f9f9f9;
+      display: none;
+  }
+
+  .status-box {
+      background-color: #e8f5e9;
+      border-color: #81c784;
+      font-weight: bold;
+      text-align: center;
+      display: none;
+  }
+</style>
